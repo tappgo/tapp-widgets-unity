@@ -1,0 +1,30 @@
+{
+  "name": "com.tapp.go.widgets",
+  "version": "2.1.1",
+  "displayName": "Tapp Widgets",
+  "description": "Server-configured home-screen widgets on iOS and Android, and Picture in Picture on iOS, without shipping a new app build. Adds the TappWidgets API, links the Tapp Widgets module into your Xcode project and creates the widgets in your Gradle project. Needs Tapp Core (com.tapp.go) at the same version.",
+  "unity": "2022.3",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "author": {
+    "name": "Tapp",
+    "url": "https://tappgo.com"
+  },
+  "documentationUrl": "https://documentation.tappgo.com/v2/unity/overview",
+  "keywords": [
+    "tapp",
+    "widget",
+    "picture-in-picture",
+    "ios",
+    "android",
+    "engagement"
+  ],
+  "dependencies": {
+    "com.tapp.go": "2.1.1"
+  },
+  "hideInEditor": false,
+  "repository": {
+    "url": "https://github.com/TappRepos/TappWidgets-Unity",
+    "type": "git",
+    "revision": "4ac06271e9e8b3ce44ec30b33ddd4afb29c3edbb"
+  }
+}
