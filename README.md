@@ -11,8 +11,8 @@ install it without the Live Activities package and your app does not carry that 
 ```json
 {
   "dependencies": {
-    "com.tapp.go": "https://github.com/tappgo/tapp-unity.git#v2.1.1",
-    "com.tapp.go.widgets": "https://github.com/tappgo/tapp-widgets-unity.git#v2.1.1"
+    "com.tapp.go": "https://github.com/tappgo/tapp-unity.git#v2.2.0",
+    "com.tapp.go.widgets": "https://github.com/tappgo/tapp-widgets-unity.git#v2.2.0"
   }
 }
 ```
@@ -33,6 +33,11 @@ and the calls below need it.
 its position in the list, so change an id in place to move that slot to a new campaign, append to add one, and
 never reorder. One iOS widget extension serves up to eight widgets, so an iOS build is refused with more ids
 than that.
+
+**Widget sizes (iOS)** decides which sizes the iOS widget gallery offers for every id: Small, Medium or both. A
+new settings asset starts with Small; an asset from before the setting existed keeps both. iOS knows a placed
+widget by its slot and its size, so dropping a size after release removes the widgets players placed at that
+size. Android has no counterpart.
 
 Installing this package is what makes the iOS build link the `TappWidgets` module and put the widgets into the
 widget extension Tapp creates, and the Android build declare `com.tappgo:tapp-widgets` and create one
@@ -59,6 +64,11 @@ var link = TappWidgets.PendingLink().Value;
 if (link != null)
     TappWidgets.ValidateToken(TokenIn(link), widgetId, result => { if (result.Value.IsValid) Grant(result.Value.Prize); });
 ```
+
+**A widget published in several languages follows `Tapp.SetLanguage`** (core; `null` follows the device again) and
+redraws once the content in the new language is cached; `SetText` and `SetCountdownDuration` edits are per language,
+so set them again after a switch. A node published with several candidates (a pool) shows one at random per content
+refresh (a spin or a countdown tick keeps the pick) — nothing to call.
 
 **One API on both platforms.** Picture in Picture answers `pictureInPictureUnsupported` on Android; the
 pin-widget calls answer `false` on iOS. Neither needs an `#if`. A widget's link does not come through

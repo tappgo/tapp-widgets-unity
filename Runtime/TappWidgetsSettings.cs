@@ -3,6 +3,23 @@ using UnityEngine;
 namespace TappGo
 {
     /// <summary>
+    /// The sizes the iOS widget gallery offers for a widget id — <see cref="TappWidgetsSettings.iosWidgetSizes"/>.
+    /// </summary>
+    /// <remarks>
+    /// A set of flags: <c>Small | Medium</c> offers both. iOS knows a placed widget by its slot and its size, so
+    /// dropping a size after release removes the widgets players placed at that size; the size kept is untouched.
+    /// </remarks>
+    [System.Flags]
+    public enum TappWidgetSizes
+    {
+        /// <summary>The small (2×2) widget — <c>TappSmallWidget</c> on iOS.</summary>
+        Small = 1,
+
+        /// <summary>The medium (4×2) widget — <c>TappMediumWidget</c> on iOS.</summary>
+        Medium = 2,
+    }
+
+    /// <summary>
     /// The Widgets settings, edited in <b>Project Settings → Tapp</b> beside core's.
     /// </summary>
     /// <remarks>
@@ -25,6 +42,22 @@ namespace TappGo
                  "May be left empty only when Picture in Picture is on and is all you use this package for: " +
                  "the builds then add no widget and no widget extension for it.")]
         public string[] widgetIds = new string[0];
+
+        /// <summary>
+        /// The sizes the iOS widget gallery offers for every widget id. Both by default, so an asset made before
+        /// this field existed builds what it always built.
+        /// </summary>
+        /// <remarks>
+        /// iOS knows a placed widget by its slot and its size: dropping a size after release removes the widgets
+        /// players placed at that size, and keeps those placed at the size that stays. No size at all is refused
+        /// while there is a widget id. Android has no counterpart.
+        /// </remarks>
+        [Header("Widget gallery (iOS)")]
+        [Tooltip("The sizes the iOS widget gallery offers for every widget id: Small, Medium or both.\n\n" +
+                 "iOS knows a placed widget by its slot and its size, so dropping a size after release removes " +
+                 "the widgets players placed at that size. Those at the size you keep stay.\n\n" +
+                 "Android has no counterpart: this setting is not read there.")]
+        public TappWidgetSizes iosWidgetSizes = AllIosWidgetSizes;
 
         [Header("Picture in Picture (iOS)")]
         [Tooltip("Let TappWidgets.StartPictureInPicture play a video in a floating window while the player " +
@@ -59,6 +92,15 @@ namespace TappGo
         /// when the pin moves, check it still says eight.
         /// </summary>
         internal const int MaximumIosWidgetIds = 8;
+
+        /// <summary>Both sizes: what <see cref="iosWidgetSizes"/> defaults to, and what <c>TappWidgets.all</c> declares.</summary>
+        internal const TappWidgetSizes AllIosWidgetSizes = TappWidgetSizes.Small | TappWidgetSizes.Medium;
+
+        /// <summary>Whether <see cref="iosWidgetSizes"/> names at least one size this package knows.</summary>
+        internal bool OffersAnIosWidgetSize()
+        {
+            return (iosWidgetSizes & AllIosWidgetSizes) != 0;
+        }
 
         /// <summary>
         /// The widget ids with blanks dropped — what both platforms are configured with.

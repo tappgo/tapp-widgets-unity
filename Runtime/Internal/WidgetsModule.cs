@@ -75,6 +75,14 @@ namespace TappGo.Widgets.Internal
                        "Widgets.";
             }
 
+            // iOS only, and only with a widget: the sizes decide what the extension declares for each id, and
+            // with none it would declare no widget at all — a gallery with nothing in it, and no error anywhere.
+            if (platform == TappPlatform.iOS && widgets > 0 && !own.OffersAnIosWidgetSize())
+            {
+                return "iosWidgetSizes names no size; choose Small, Medium or both in Project Settings → Tapp → " +
+                       "Widgets.";
+            }
+
             // Judged only when a widget is staged: the period is written into the widget's description and
             // nowhere else, so with no widget it is a number nothing reads.
             if (widgets > 0 &&
