@@ -65,6 +65,14 @@ namespace TappGo.Widgets.Editor
             {
                 created.widgetIds = ids.Split('\n');
             }
+            else
+            {
+                // A host starting out: the docs lead with one small widget, so a new asset offers that size
+                // alone. Only a new asset — the field's default stays both sizes, so every asset made before the
+                // field existed builds what it always built, and so does one carried over from a pre-split
+                // project with widget ids, whose players may have placed either size.
+                created.iosWidgetSizes = TappWidgetSizes.Small;
+            }
 
             if (legacy.TryGetValue("pictureInPictureEnabled", out var pictureInPicture))
             {
@@ -129,9 +137,36 @@ namespace TappGo.Widgets.Editor
             contribution.BundleImports.Add("AppIntents");
             contribution.BundleImports.Add(Product);
             contribution.BundleSetup.Add(ExtensionSetup(settings.appGroupIdentifier, own));
-            contribution.BundleBody.Add("TappWidgets.all");
+            contribution.BundleBody.AddRange(BundleBody(ids.Length, own.iosWidgetSizes));
             contribution.BundleDeclarations.Add(IntentsDeclaration);
             return contribution;
+        }
+
+        /// <summary>
+        /// What the extension's <c>body</c> declares: both sizes for every id, or one size per id in id order.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Both sizes are <c>TappWidgets.all</c>, exactly as before the setting existed, so an existing project
+        /// generates the same file. One size is one entry per id — slot 0 takes no argument — because a
+        /// WidgetKit kind is derived from slot and size alike either way, and that is what keeps the widgets a
+        /// player placed at the size that stays.
+        /// </para>
+        /// <para>
+        /// No size is refused by <see cref="WidgetsModule.Validate"/> before a build gets here; should one
+        /// arrive anyway it is read as both, today's output, rather than as a bundle that declares nothing.
+        /// </para>
+        /// </remarks>
+        internal static IEnumerable<string> BundleBody(int widgets, TappWidgetSizes sizes)
+        {
+            sizes &= TappWidgetsSettings.AllIosWidgetSizes;
+            if (sizes == TappWidgetSizes.Small || sizes == TappWidgetSizes.Medium)
+            {
+                var type = sizes == TappWidgetSizes.Small ? "TappSmallWidget" : "TappMediumWidget";
+                return Enumerable.Range(0, widgets).Select(slot => slot == 0 ? $"{type}()" : $"{type}(slot: {slot})");
+            }
+
+            return new[] { "TappWidgets.all" };
         }
 
         /// <summary>

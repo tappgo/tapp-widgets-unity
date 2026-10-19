@@ -3,6 +3,44 @@
 All notable changes to `com.tapp.go.widgets`. Follows [Semantic Versioning](https://semver.org). Every Tapp package is
 released at one version, and needs Tapp Core (`com.tapp.go`) at that same version.
 
+## [2.2.0] — 2026-10-19
+
+Resolves iOS `tappgo/tapp-ios` **2.3.0** and Android `com.tappgo` **2.2.0**, as pinned by Tapp Core, both released on
+2026-10-19. **No C# API, settings or bridge change**: everything below comes from the two
+native releases, and the one call involved is Tapp Core's.
+
+- **Pools.** An image or text node the back office publishes with several candidates shows one of them at random once
+  per refresh of the widget's content — a scheduled refresh, a publish, a tap that moves to another screen. A spin, a
+  countdown tick or a picture retry keeps the pick. Drawn natively; nothing to call and nothing to configure.
+- **A widget published in several languages follows `Tapp.SetLanguage`** (new in Tapp Core 2.2.0; `null` follows the
+  device again). Without a call the widget asks for the device's language and gets the closest the campaign is
+  published in, or its base language. After a switch the campaign is re-fetched in the background and the widget
+  redraws once the new content is cached. A translated screen is a screen of its own, so **`SetText` and
+  `SetCountdownDuration` edits are not carried into it — set them again after a switch**, as after a publish.
+- **A widget config cached by an earlier SDK is fetched once more after the upgrade**, on both platforms: the cache now
+  remembers the language it was requested in, and a cache written before 2.2.0 names none. One extra request per
+  widget, nothing to do.
+- **Android: a widget on a Unity host no longer sits on the loading card after a reboot** until the app draws it. The
+  launcher keeps no picture across a reboot and asks the provider for an update in a process where the host has not
+  configured yet; the SDK now restores the last configuration in that callback, as a tap already did. Fixed in the
+  Android SDK 2.2.0 (Tapp-Android D-167), found with this package's demo. No change on iOS.
+
+## [2.1.2] — 2026-10-15
+
+Resolves iOS `tappgo/tapp-ios` **2.2.3** and Android `com.tappgo` **2.1.1**, as pinned by Tapp Core. One new
+setting; no bridge change. Neither native release in this version touched widgets: iOS 2.2.3 fixes a Live
+Activity call order (Tapp Live Activities' changelog) and rebuilds the widgets framework unchanged.
+
+- **iOS: choose the widget sizes the gallery offers** — *Widget sizes (iOS)* in Project Settings → Tapp → Widgets
+  (`TappWidgetsSettings.iosWidgetSizes`, a `TappWidgetSizes` flags field): Small, Medium or both, for every widget
+  id. Owner ruling of 2026-10-14: hosts can choose the iOS widget sizes, the docs lead with one small widget, and
+  existing settings keep both. **Nothing changes for an existing project**: an asset without the field reads both
+  sizes and generates `TappWidgets.all` exactly as before. A Widgets asset created from now on starts with Small
+  alone, unless it is carried over from a pre-split project that had widget ids. One size generates one
+  `TappSmallWidget` / `TappMediumWidget` per id, in id order. iOS knows a placed widget by its slot and its size,
+  so dropping a size after release removes the widgets players placed at that size and keeps the rest. An iOS
+  build with widget ids and no size is refused. Android has no counterpart.
+
 ## [2.1.1] — 2026-10-11
 
 Resolves iOS `tappgo/tapp-ios` **2.2.2** and Android `com.tappgo` **2.1.1**, as pinned by Tapp Core. No C# API,
