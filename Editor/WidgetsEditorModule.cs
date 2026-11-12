@@ -137,7 +137,8 @@ namespace TappGo.Widgets.Editor
             contribution.BundleImports.Add("AppIntents");
             contribution.BundleImports.Add(Product);
             contribution.BundleSetup.Add(ExtensionSetup(settings.appGroupIdentifier, own));
-            contribution.BundleBody.AddRange(BundleBody(ids.Length, own.iosWidgetSizes));
+            contribution.BundleBody.AddRange(BundleBody(ids.Length, own.iosWidgetSizes,
+                own.IosWidgetKind(TappWidgetSizes.Small), own.IosWidgetKind(TappWidgetSizes.Medium)));
             contribution.BundleDeclarations.Add(IntentsDeclaration);
             return contribution;
         }
@@ -159,14 +160,42 @@ namespace TappGo.Widgets.Editor
         /// </remarks>
         internal static IEnumerable<string> BundleBody(int widgets, TappWidgetSizes sizes)
         {
+            return BundleBody(widgets, sizes, null, null);
+        }
+
+        /// <summary>
+        /// <see cref="BundleBody(int, TappWidgetSizes)"/>, with the first id's widgets declared under the kinds an
+        /// earlier build shipped (<see cref="TappWidgetsSettings.iosSmallWidgetKind"/>).
+        /// </summary>
+        /// <remarks>
+        /// With no kind the output is exactly what it was before the setting existed. With one, both sizes cannot
+        /// be <c>TappWidgets.all</c> — that declares the SDK's kinds — so they are listed one by one, small before
+        /// medium for each id, which is the same set of widgets. A kind for a size not declared is refused by
+        /// <see cref="WidgetsModule.Validate"/>; should one arrive anyway it is ignored.
+        /// </remarks>
+        internal static IEnumerable<string> BundleBody(int widgets, TappWidgetSizes sizes, string smallKind, string mediumKind)
+        {
             sizes &= TappWidgetsSettings.AllIosWidgetSizes;
-            if (sizes == TappWidgetSizes.Small || sizes == TappWidgetSizes.Medium)
+            var oneSize = sizes == TappWidgetSizes.Small || sizes == TappWidgetSizes.Medium;
+            if (!oneSize && smallKind == null && mediumKind == null)
             {
-                var type = sizes == TappWidgetSizes.Small ? "TappSmallWidget" : "TappMediumWidget";
-                return Enumerable.Range(0, widgets).Select(slot => slot == 0 ? $"{type}()" : $"{type}(slot: {slot})");
+                return new[] { "TappWidgets.all" };
             }
 
-            return new[] { "TappWidgets.all" };
+            var declared = oneSize
+                ? new[] { sizes }
+                : new[] { TappWidgetSizes.Small, TappWidgetSizes.Medium };
+            return Enumerable.Range(0, widgets).SelectMany(slot => declared.Select(size =>
+            {
+                var type = size == TappWidgetSizes.Small ? "TappSmallWidget" : "TappMediumWidget";
+                var kind = slot == 0 ? (size == TappWidgetSizes.Small ? smallKind : mediumKind) : null;
+                if (kind != null)
+                {
+                    return $"{type}(kind: \"{kind}\")";
+                }
+
+                return slot == 0 ? $"{type}()" : $"{type}(slot: {slot})";
+            }));
         }
 
         /// <summary>

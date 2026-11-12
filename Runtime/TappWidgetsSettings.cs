@@ -59,6 +59,34 @@ namespace TappGo
                  "Android has no counterpart: this setting is not read there.")]
         public TappWidgetSizes iosWidgetSizes = AllIosWidgetSizes;
 
+        /// <summary>
+        /// The WidgetKit kind the first widget id's small widget is declared under, when this app continues a widget
+        /// an earlier build already shipped. Empty — the default — declares the SDK's own.
+        /// </summary>
+        /// <remarks>
+        /// iOS knows a placed widget by its extension's bundle id and its kind. An app moving here from the earlier
+        /// Tapp Unity package (<c>TappUnityWidget</c>) keeps every widget its players placed by setting this to
+        /// <c>PlayableWidget</c> and core's <c>extensionTargetName</c> to <c>PlayableWidgetExtension</c>. Any app
+        /// already on this package must leave it empty: its players placed the SDK's own kind.
+        /// </remarks>
+        [Header("Continue an earlier widget (iOS)")]
+        [Tooltip("ONLY for an app moving to this package from the earlier Tapp Unity package (TappUnityWidget), " +
+                 "whose players already placed its widget.\n\n" +
+                 "Set this to PlayableWidget and Project Settings → Tapp → Extension Target Name to " +
+                 "PlayableWidgetExtension: iOS then hands every widget already on a Home Screen to this SDK, with " +
+                 "nothing for the player to do.\n\n" +
+                 "Applies to the first widget id. Leave it empty in any other app — an app that already ships this " +
+                 "package must keep it empty, or the widgets its players placed go blank.")]
+        public string iosSmallWidgetKind = "";
+
+        /// <summary>
+        /// <see cref="iosSmallWidgetKind"/> for the medium widget. The earlier Tapp package offered a small widget
+        /// only, so an app moving from it leaves this empty.
+        /// </summary>
+        [Tooltip("As above, for the first widget id's medium widget — only when the earlier widget was offered at " +
+                 "the medium size. The earlier Tapp Unity package's widget was small only: leave this empty.")]
+        public string iosMediumWidgetKind = "";
+
         [Header("Picture in Picture (iOS)")]
         [Tooltip("Let TappWidgets.StartPictureInPicture play a video in a floating window while the player " +
                  "leaves the app. Adds `audio` to UIBackgroundModes in the Xcode project — App Review asks " +
@@ -100,6 +128,68 @@ namespace TappGo
         internal bool OffersAnIosWidgetSize()
         {
             return (iosWidgetSizes & AllIosWidgetSizes) != 0;
+        }
+
+        /// <summary>The prefix of every kind the SDK declares itself (<c>Tapp.&lt;slot&gt;.&lt;size&gt;</c>).</summary>
+        internal const string NativeKindPrefix = "Tapp.";
+
+        /// <summary>The kind set for <paramref name="size"/>, trimmed, or <c>null</c> when none is.</summary>
+        internal string IosWidgetKind(TappWidgetSizes size)
+        {
+            var kind = size == TappWidgetSizes.Small ? iosSmallWidgetKind : iosMediumWidgetKind;
+            return string.IsNullOrWhiteSpace(kind) ? null : kind.Trim();
+        }
+
+        /// <summary>
+        /// Why the kinds cannot be generated into the iOS extension, or <c>null</c>.
+        /// </summary>
+        /// <remarks>
+        /// A kind is written into Swift source as a string literal, so it is held to letters, digits, dots, hyphens
+        /// and underscores — every kind an earlier Tapp build shipped, and nothing that needs escaping. The SDK's own
+        /// names are refused, as is one kind for both sizes, which WidgetKit would declare twice; so is a kind for a
+        /// size the gallery does not offer, which would be silently dropped.
+        /// </remarks>
+        internal string IosWidgetKindsProblem()
+        {
+            var small = IosWidgetKind(TappWidgetSizes.Small);
+            var medium = IosWidgetKind(TappWidgetSizes.Medium);
+            foreach (var (kind, field, size) in new[]
+                     {
+                         (small, nameof(iosSmallWidgetKind), TappWidgetSizes.Small),
+                         (medium, nameof(iosMediumWidgetKind), TappWidgetSizes.Medium),
+                     })
+            {
+                if (kind == null)
+                {
+                    continue;
+                }
+
+                if (!System.Text.RegularExpressions.Regex.IsMatch(kind, "^[A-Za-z0-9._-]+$"))
+                {
+                    return $"{field} \"{kind}\" may hold only letters, digits, dots, hyphens and underscores. Set " +
+                           "it to the kind your previous widget declared, e.g. PlayableWidget.";
+                }
+
+                if (kind.StartsWith(NativeKindPrefix, System.StringComparison.Ordinal))
+                {
+                    return $"{field} \"{kind}\" is a name the SDK uses for its own widgets. Leave it empty unless " +
+                           "this app continues a widget from the earlier Tapp package.";
+                }
+
+                if ((iosWidgetSizes & size) == 0 && OffersAnIosWidgetSize())
+                {
+                    return $"{field} is set but iosWidgetSizes does not offer {size}. Offer that size, or clear " +
+                           $"{field}.";
+                }
+            }
+
+            if (small != null && small == medium)
+            {
+                return "iosSmallWidgetKind and iosMediumWidgetKind are the same; WidgetKit declares a kind once. " +
+                       "Keep it on the size your previous widget was offered at and clear the other.";
+            }
+
+            return null;
         }
 
         /// <summary>

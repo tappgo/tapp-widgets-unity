@@ -52,6 +52,12 @@ public func TappGo_SetWidgetCountdownDuration(_ json: UnsafePointer<CChar>?) -> 
     tappGoHandOff(TappBridge.setWidgetCountdownDuration(json: tappGoPayload(json)))
 }
 
+/// Contract revision 16 — `TappBridge.setWidgetRemoteUpdateParameters(json:)`, from iOS `v2.4.0`.
+@_cdecl("TappGo_SetWidgetRemoteUpdateParameters")
+public func TappGo_SetWidgetRemoteUpdateParameters(_ json: UnsafePointer<CChar>?) -> UnsafeMutablePointer<CChar>? {
+    tappGoHandOff(TappBridge.setWidgetRemoteUpdateParameters(json: tappGoPayload(json)))
+}
+
 /// `{}` is the ordinary payload here — "any declared widget" — so this one does take JSON.
 @_cdecl("TappGo_IsWidgetInstalled")
 public func TappGo_IsWidgetInstalled(_ json: UnsafePointer<CChar>?) -> UnsafeMutablePointer<CChar>? {
