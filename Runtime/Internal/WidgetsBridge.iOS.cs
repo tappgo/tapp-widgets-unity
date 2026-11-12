@@ -45,6 +45,11 @@ namespace TappGo.Widgets.Internal
             return TappNative.Take(TappGo_SetWidgetCountdownDuration(TappNative.Encode(json)));
         }
 
+        internal static string SetRemoteUpdateParameters(string json)
+        {
+            return TappNative.Take(TappGo_SetWidgetRemoteUpdateParameters(TappNative.Encode(json)));
+        }
+
         internal static string IsInstalled(string json)
         {
             return TappNative.Take(TappGo_IsWidgetInstalled(TappNative.Encode(json)));
@@ -103,6 +108,9 @@ namespace TappGo.Widgets.Internal
 
         [DllImport("__Internal")]
         private static extern IntPtr TappGo_SetWidgetCountdownDuration(byte[] json);
+
+        [DllImport("__Internal")]
+        private static extern IntPtr TappGo_SetWidgetRemoteUpdateParameters(byte[] json);
 
         [DllImport("__Internal")]
         private static extern IntPtr TappGo_IsWidgetInstalled(byte[] json);

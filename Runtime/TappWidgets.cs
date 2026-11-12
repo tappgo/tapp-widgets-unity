@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TappGo.Modules;
 using TappGo.Widgets.Internal;
 
@@ -144,6 +145,51 @@ namespace TappGo
                 .AddInt("seconds", seconds)
                 .Build();
             return WidgetReply.ParseApplied(WidgetsBridge.SetCountdownDuration(json));
+        }
+
+        /// <summary>
+        /// Stores the key/value map a widget sends the Tapp server when it asks for remote edits.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Store the player's state once — <c>{"level":"5","spins_left":"3"}</c> — and from then on a placed widget
+        /// sends it to the Tapp server on the cadence its campaign names, and applies the countdown and text edits
+        /// the answer carries exactly as <see cref="SetCountdownDuration"/> and <see cref="SetText"/> would. Your
+        /// app sends nothing itself, ever; a campaign without remote updates never asks.
+        /// </para>
+        /// <para>
+        /// <b>Call it whenever the values change, or on every foreground</b>: the same map again answers
+        /// <c>false</c> and leaves the widget's schedule alone, so repeating it costs nothing. Do not send the
+        /// values to the server yourself, and do not turn a page after storing them — the widget asks on its next
+        /// refresh. Keys and values are sent verbatim; an empty map is a value. A blank key, a map over 8 KB, or
+        /// a widget id this app does not declare is refused by the SDK.
+        /// </para>
+        /// </remarks>
+        /// <param name="widgetId">The widget, as configured in Project Settings → Tapp.</param>
+        /// <param name="parameters">The values to send. Never <c>null</c>, and no value may be <c>null</c>.</param>
+        /// <returns><c>true</c> if the stored map changed; <c>false</c> if the same map was already stored, which is a success.</returns>
+        public static TappResult<bool> SetRemoteUpdateParameters(string widgetId, IReadOnlyDictionary<string, string> parameters)
+        {
+            if (string.IsNullOrEmpty(widgetId) || parameters == null)
+            {
+                return TappEnvelope.Rejected<bool>(TappErrorCode.InvalidRequest, "widgetId and parameters are both required.");
+            }
+
+            var map = new JsonBuilder();
+            foreach (var pair in parameters)
+            {
+                // A null value has no string spelling, and dropping it would send a different map from the one
+                // passed; the native side refuses anything but strings, so refuse it here with the key named.
+                if (pair.Value == null)
+                {
+                    return TappEnvelope.Rejected<bool>(TappErrorCode.InvalidRequest, $"parameters[\"{pair.Key}\"] is null; every value must be a string.");
+                }
+
+                map.Add(pair.Key, pair.Value);
+            }
+
+            var json = new JsonBuilder().Add("widgetID", widgetId).AddObject("parameters", map).Build();
+            return WidgetReply.ParseChanged(WidgetsBridge.SetRemoteUpdateParameters(json));
         }
 
         /// <summary>

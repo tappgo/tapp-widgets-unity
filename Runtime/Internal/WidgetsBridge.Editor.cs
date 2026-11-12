@@ -50,6 +50,12 @@ namespace TappGo.Widgets.Internal
             return "{\"ok\":true,\"value\":{\"applied\":false}}";
         }
 
+        internal static string SetRemoteUpdateParameters(string json)
+        {
+            TappNative.Log("SetWidgetRemoteUpdateParameters", json);
+            return "{\"ok\":true,\"value\":{\"changed\":false}}";
+        }
+
         internal static string IsInstalled(string json)
         {
             TappNative.Log("IsWidgetInstalled", json);

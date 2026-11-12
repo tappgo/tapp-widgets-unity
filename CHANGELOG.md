@@ -3,6 +3,41 @@
 All notable changes to `com.tapp.go.widgets`. Follows [Semantic Versioning](https://semver.org). Every Tapp package is
 released at one version, and needs Tapp Core (`com.tapp.go`) at that same version.
 
+## [2.3.0] — unreleased
+
+Resolves iOS `tappgo/tapp-ios` **2.5.0** and Android `com.tappgo` **2.3.0**, as pinned by Tapp Core. One new call,
+`SetRemoteUpdateParameters`, and two optional iOS settings for an app moving from the earlier Tapp package. Install
+beside Tapp Core at `#v2.3.0`.
+
+### Added
+
+- **`TappWidgets.SetRemoteUpdateParameters(string widgetId, IReadOnlyDictionary<string, string> parameters)`** — stores
+  the key/value map a placed widget sends the Tapp server when it asks for remote edits (`{"level":"5"}`); the widget
+  then asks on the cadence its campaign names and applies the countdown and text edits the answer carries, exactly as
+  `SetCountdownDuration` and `SetText` would. The app sends nothing itself. Synchronous; `true` when the stored map
+  changed, `false` when the same map was already stored — so calling it on every foreground costs nothing. An empty map
+  is a value; a `null` map, a `null` value or a blank widget id is `InvalidRequest` here, and a blank key, a map over
+  8 KB or an undeclared widget id is refused natively. Contract revision 16: `TappGo_SetWidgetRemoteUpdateParameters`
+  on iOS, `TappWidgetsBridge.setWidgetRemoteUpdateParameters` on Android — needs iOS `v2.4.0` and Android `2.3.0` or
+  later, which the 2.3.0 pins resolve.
+- **Keep the widgets players placed with the earlier Tapp package.** Two optional settings, `iosSmallWidgetKind` and
+  `iosMediumWidgetKind` (Project Settings → Tapp → Widgets → *Continue an earlier widget (iOS)*), declare the first
+  widget id's widget under a kind an earlier build shipped. An app moving from `TappUnityWidget` sets
+  `iosSmallWidgetKind` to `PlayableWidget` and core's Extension Target Name to `PlayableWidgetExtension`: iOS then
+  hands every widget already on a Home Screen to this SDK, with nothing for the player to do. Empty by default, and an
+  empty field generates exactly what it did before; an app already on this package must leave both empty. Needs iOS
+  `v2.5.0` (`TappSmallWidget(slot:kind:)`), which the 2.3.0 pin resolves. Android reads neither.
+
+### Changed
+
+- **Android: `com.tappgo:tapp-widgets` 2.3.0**, matching Tapp Core's re-pin.
+
+- **The mirror's `main` follows each release.** `tappgo/tapp-widgets-unity`'s `main` showed 2.1.1 while 2.2.0 was the
+  latest tag, because `main` takes changes only through a pull request and a release pushed its tag alone.
+  The release now also opens that pull request: `release/vX.Y.Z-main`, one commit on `main` carrying the tag's
+  tree exactly, titled `com.tapp.go.widgets X.Y.Z`, for a person to approve and squash-merge. The tag stays what
+  an install names (`#vX.Y.Z`); nothing changes in the package.
+
 ## [2.2.0] — 2026-10-19
 
 Resolves iOS `tappgo/tapp-ios` **2.3.0** and Android `com.tappgo` **2.2.0**, as pinned by Tapp Core, both released on

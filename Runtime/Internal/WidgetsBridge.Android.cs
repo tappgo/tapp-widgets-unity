@@ -61,6 +61,12 @@ namespace TappGo.Widgets.Internal
             return TappNative.Call(BridgeClass, "setWidgetCountdownDuration", json);
         }
 
+        /// <summary>Contract revision 16, on <c>TappWidgetsBridge</c> from <c>tapp-widgets</c> 2.3.0.</summary>
+        internal static string SetRemoteUpdateParameters(string json)
+        {
+            return TappNative.Call(BridgeClass, "setWidgetRemoteUpdateParameters", json);
+        }
+
         internal static string IsInstalled(string json)
         {
             return TappNative.Call(BridgeClass, "isWidgetInstalled", json);

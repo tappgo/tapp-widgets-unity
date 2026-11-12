@@ -83,6 +83,17 @@ namespace TappGo.Widgets.Internal
                        "Widgets.";
             }
 
+            // iOS only, and only with a widget: a kind is written into the extension's Swift source, and one that
+            // cannot be is better refused here than left for Xcode to report.
+            if (platform == TappPlatform.iOS && widgets > 0)
+            {
+                var kinds = own.IosWidgetKindsProblem();
+                if (kinds != null)
+                {
+                    return kinds;
+                }
+            }
+
             // Judged only when a widget is staged: the period is written into the widget's description and
             // nowhere else, so with no widget it is a number nothing reads.
             if (widgets > 0 &&

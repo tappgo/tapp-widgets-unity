@@ -11,8 +11,8 @@ install it without the Live Activities package and your app does not carry that 
 ```json
 {
   "dependencies": {
-    "com.tapp.go": "https://github.com/tappgo/tapp-unity.git#v2.2.0",
-    "com.tapp.go.widgets": "https://github.com/tappgo/tapp-widgets-unity.git#v2.2.0"
+    "com.tapp.go": "https://github.com/tappgo/tapp-unity.git#v2.3.0",
+    "com.tapp.go.widgets": "https://github.com/tappgo/tapp-widgets-unity.git#v2.3.0"
   }
 }
 ```
@@ -52,11 +52,14 @@ package has nothing to do, and the settings page and both builds say so.
 ## Use
 
 ```csharp
+using System.Collections.Generic;
 using TappGo;
 
 TappWidgets.ShowNextEntry();                                   // every widget turns to its next screen
 TappWidgets.SetText(widgetId, "screen_1", "title", "3 spins left!");
 TappWidgets.SetCountdownDuration(widgetId, "screen_1", "Countdown", 90);
+TappWidgets.SetRemoteUpdateParameters(widgetId,                 // what the widget sends when it asks the server
+    new Dictionary<string, string> { ["level"] = "5" });         // for remote edits — call on every foreground
 if (!TappWidgets.IsInstalled().Value) ShowAddWidgetTutorial();
 
 // A widget tap brought the app forward: read the link once, validate the token it carries
