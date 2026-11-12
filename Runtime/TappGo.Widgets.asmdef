@@ -1,0 +1,16 @@
+{
+  "name": "TappGo.Widgets",
+  "rootNamespace": "TappGo",
+  "references": [
+    "TappGo"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED — re-staged from the Tapp package on every build. Edits in the Gradle project are lost.
+
+  The widget's declaration below API 31, where size is in dp and the launcher decides how many cells that
+  is. `res/xml-v31/` carries the same widget with the grid-aware attributes Android 12 introduced.
+
+  `updatePeriodMillis` is the staleness backstop — the SDK ships no widget-info XML, so it is set here
+  from Project Settings → Tapp. 30 minutes is the platform's floor; the settings refuse anything smaller.
+  `initialLayout` is the SDK's own loading card, which is what the launcher draws until the first render
+  lands; `configure` is the SDK's no-op configuration activity, which is what lets requestPinWidget
+  complete cleanly on launchers that run a configure step.
+
+  Tokens substituted at stage time:
+    __TAPP_UPDATE_PERIOD_MILLIS__
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:updatePeriodMillis="__TAPP_UPDATE_PERIOD_MILLIS__"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:initialLayout="@layout/tapp_loading_card"
+    android:configure="com.tappgo.sdk.TappWidgetConfigActivity" />

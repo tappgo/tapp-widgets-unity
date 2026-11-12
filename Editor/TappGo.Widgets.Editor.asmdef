@@ -1,0 +1,20 @@
+{
+  "name": "TappGo.Widgets.Editor",
+  "rootNamespace": "TappGo.Widgets.Editor",
+  "references": [
+    "TappGo",
+    "TappGo.Editor",
+    "TappGo.Widgets"
+  ],
+  "includePlatforms": [
+    "Editor"
+  ],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": false,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

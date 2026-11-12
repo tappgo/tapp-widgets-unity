@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED — re-staged from the Tapp package on every build. Edits in the Gradle project are lost.
+
+  The same widget on Android 12 and above, sized in home-screen cells: two by two, the shape iOS calls
+  systemSmall. `previewLayout` is the SDK's picker preview and `description` the line under the label,
+  both of which exist from API 31 — which is why they are declared here and not in the base file.
+
+  Tokens substituted at stage time:
+    __TAPP_UPDATE_PERIOD_MILLIS__
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="110dp"
+    android:minHeight="110dp"
+    android:targetCellWidth="2"
+    android:targetCellHeight="2"
+    android:updatePeriodMillis="__TAPP_UPDATE_PERIOD_MILLIS__"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:initialLayout="@layout/tapp_loading_card"
+    android:configure="com.tappgo.sdk.TappWidgetConfigActivity"
+    android:previewLayout="@layout/tapp_widget_preview"
+    android:description="@string/tapp_widget_description" />
