@@ -3,7 +3,18 @@
 All notable changes to `com.tapp.go.widgets`. Follows [Semantic Versioning](https://semver.org). Every Tapp package is
 released at one version, and needs Tapp Core (`com.tapp.go`) at that same version.
 
-## [2.3.0] — unreleased
+## [2.3.1] — 2026-11-17
+
+Resolves iOS `tappgo/tapp-ios` **2.5.1** and Android `com.tappgo` **2.3.1**, as pinned by Tapp Core. No C# API,
+settings or bridge change. Install beside Tapp Core at `#v2.3.1`.
+
+- **Android: configuring again no longer leaves a widget on its previous frame.** A second `Tapp.Configure` in one
+  process used to cancel every placed widget's work in flight — a tap's redraw, a countdown's tick, a reload — and the
+  widget stayed on its last frame until its next update. A `Configure` equal to the one in place now changes nothing.
+  Fixed in the Android SDK 2.3.1; `com.tappgo:tapp-widgets` 2.3.1, matching Tapp Core's re-pin.
+- iOS: nothing changes for widgets. The iOS SDK 2.5.1 rebuilds the widgets framework from unchanged source.
+
+## [2.3.0] — 2026-11-12
 
 Resolves iOS `tappgo/tapp-ios` **2.5.0** and Android `com.tappgo` **2.3.0**, as pinned by Tapp Core. One new call,
 `SetRemoteUpdateParameters`, and two optional iOS settings for an app moving from the earlier Tapp package. Install
