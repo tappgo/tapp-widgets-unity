@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  GENERATED — re-staged from the Tapp package on every build. Edits in the Gradle project are lost.
+
+  What the launcher's widget picker shows: the label under every Tapp widget, and on Android 12 and later
+  the line of description beneath it. Both come from Project Settings → Tapp (Android Widget Label /
+  Description); the SDK reads neither, the launcher reads both from this package.
+
+  Tokens substituted at stage time:
+    __TAPP_WIDGET_LABEL__
+    __TAPP_WIDGET_DESCRIPTION__
+-->
+<resources>
+    <string name="tapp_widget_label">__TAPP_WIDGET_LABEL__</string>
+    <string name="tapp_widget_description">__TAPP_WIDGET_DESCRIPTION__</string>
+</resources>
