@@ -11,8 +11,8 @@ install it without the Live Activities package and your app does not carry that 
 ```json
 {
   "dependencies": {
-    "com.tapp.go": "https://github.com/tappgo/tapp-unity.git#v2.3.0",
-    "com.tapp.go.widgets": "https://github.com/tappgo/tapp-widgets-unity.git#v2.3.0"
+    "com.tapp.go": "https://github.com/tappgo/tapp-unity.git#v2.3.1",
+    "com.tapp.go.widgets": "https://github.com/tappgo/tapp-widgets-unity.git#v2.3.1"
   }
 }
 ```
