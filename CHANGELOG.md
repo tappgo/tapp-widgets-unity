@@ -8,10 +8,9 @@ released at one version, and needs Tapp Core (`com.tapp.go`) at that same versio
 Resolves iOS `tappgo/tapp-ios` **2.5.1** and Android `com.tappgo` **2.3.1**, as pinned by Tapp Core. No C# API,
 settings or bridge change. Install beside Tapp Core at `#v2.3.1`.
 
-- **Android: configuring again no longer leaves a widget on its previous frame.** A second `Tapp.Configure` in one
-  process used to cancel every placed widget's work in flight — a tap's redraw, a countdown's tick, a reload — and the
-  widget stayed on its last frame until its next update. A `Configure` equal to the one in place now changes nothing.
-  Fixed in the Android SDK 2.3.1; `com.tappgo:tapp-widgets` 2.3.1, matching Tapp Core's re-pin.
+- **Android: placed widgets carry on when `Tapp.Configure` is called again.** A `Configure` equal to the one in place
+  changes nothing, so a tap's redraw, a countdown's tick and a reload continue as they were. From the Android SDK
+  2.3.1; `com.tappgo:tapp-widgets` 2.3.1, matching Tapp Core's re-pin.
 - iOS: nothing changes for widgets. The iOS SDK 2.5.1 rebuilds the widgets framework from unchanged source.
 
 ## [2.3.0] — 2026-11-12
@@ -43,9 +42,8 @@ beside Tapp Core at `#v2.3.0`.
 
 - **Android: `com.tappgo:tapp-widgets` 2.3.0**, matching Tapp Core's re-pin.
 
-- **The mirror's `main` follows each release.** `tappgo/tapp-widgets-unity`'s `main` showed 2.1.1 while 2.2.0 was the
-  latest tag, because `main` takes changes only through a pull request and a release pushed its tag alone.
-  The release now also opens that pull request: `release/vX.Y.Z-main`, one commit on `main` carrying the tag's
+- **The mirror's `main` follows each release.** `main` on `tappgo/tapp-widgets-unity` takes changes only through a
+  pull request, so each release now also opens one: `release/vX.Y.Z-main`, one commit on `main` carrying the tag's
   tree exactly, titled `com.tapp.go.widgets X.Y.Z`, for a person to approve and squash-merge. The tag stays what
   an install names (`#vX.Y.Z`); nothing changes in the package.
 
@@ -66,16 +64,15 @@ native releases, and the one call involved is Tapp Core's.
 - **A widget config cached by an earlier SDK is fetched once more after the upgrade**, on both platforms: the cache now
   remembers the language it was requested in, and a cache written before 2.2.0 names none. One extra request per
   widget, nothing to do.
-- **Android: a widget on a Unity host no longer sits on the loading card after a reboot** until the app draws it. The
-  launcher keeps no picture across a reboot and asks the provider for an update in a process where the host has not
-  configured yet; the SDK now restores the last configuration in that callback, as a tap already did. Fixed in the
-  Android SDK 2.2.0 (Tapp-Android D-167), found with this package's demo. No change on iOS.
+- **Android: a widget on a Unity host draws its content right after a reboot**, without waiting for the app. When the
+  launcher asks for an update after a reboot, the SDK restores the last configuration, as a tap already did. From the
+  Android SDK 2.2.0. No change on iOS.
 
 ## [2.1.2] — 2026-10-15
 
 Resolves iOS `tappgo/tapp-ios` **2.2.3** and Android `com.tappgo` **2.1.1**, as pinned by Tapp Core. One new
-setting; no bridge change. Neither native release in this version touched widgets: iOS 2.2.3 fixes a Live
-Activity call order (Tapp Live Activities' changelog) and rebuilds the widgets framework unchanged.
+setting; no bridge change. Neither native release in this version touched widgets: iOS 2.2.3 refines the order of
+Live Activity calls (Tapp Live Activities' changelog) and rebuilds the widgets framework unchanged.
 
 - **iOS: choose the widget sizes the gallery offers** — *Widget sizes (iOS)* in Project Settings → Tapp → Widgets
   (`TappWidgetsSettings.iosWidgetSizes`, a `TappWidgetSizes` flags field): Small, Medium or both, for every widget
@@ -93,29 +90,24 @@ Resolves iOS `tappgo/tapp-ios` **2.2.2** and Android `com.tappgo` **2.1.1**, as 
 settings or bridge change: everything below comes from the two native releases. **One thing to do on iOS** if your
 game reads widget links in `Application.deepLinkActivated` (the first entry).
 
-- **iOS: a widget link in your game's own URL scheme waits in `TappWidgets.PendingLink()`** instead of arriving
-  through `Application.deepLinkActivated`. A Collect tap opened `tapp://collect?sender=tapp&token=…` through iOS, which hands a scheme to *any*
-  installed app claiming it: with two Tapp games on one phone the tap could open the other game and give it the
-  claim token. **What to change:** read `PendingLink()` in `OnApplicationFocus(true)` and once more about half a
+- **iOS: a widget link in your game's own URL scheme waits in `TappWidgets.PendingLink()`** rather than arriving
+  through `Application.deepLinkActivated` — a Collect tap's claim link, `tapp://collect?sender=tapp&token=…`, is
+  handed straight to your game. **What to change:** read `PendingLink()` in `OnApplicationFocus(true)` and once more about half a
   second later (iOS parks the link a few tens of milliseconds after the game becomes active), and keep the scheme
   registered under *Player Settings → iOS → Supported URL schemes*. Android is unchanged: every widget link
   already waits there.
-- **`ValidateToken` no longer refuses a real win from your game's second widget**, on both platforms. A claim link
-  does not say which widget it came from, so a game with two widget ids could pass the other one's id, and the
-  token was answered invalid. The SDK now asks under the widget on this device that minted the token, whichever
-  of your ids you pass. Nothing changes for a game with one widget.
-- **A widget drawn while offline fills in its pictures once the network is back**, on both platforms. It used to
-  keep empty frames where its pictures go until the game was opened or the widget's regular update came round.
-  It now tries again a few minutes later, up to three times; on Android the game's next open also fills it in.
-- **Android 8 to 11: widgets work.** A campaign with platform-font text or a turned node did not load, and a
-  wheel's spin and collect button took no taps. Widgets on those versions now load, take taps and look as they
-  do on Android 12 and later.
-- **Android 8 to 12: a widget with many small pictures no longer stops every widget on the launcher**, such as a
-  slot animation drawn in a small widget. The update is now kept within what those versions can deliver.
-- **Android: a spin turns every placed copy of its campaign**, as on iOS. A small and a large copy of one campaign
-  now turn together; before, the other copy jumped to the result.
-- **Android: a scratch card's second play starts covered.** It showed its prize from the first frame.
-- **iOS: a widget's background no longer leaves a thin line along two edges** when the widget's shape differs very
+- **`ValidateToken` accepts any of your widget ids**, on both platforms. A claim link does not say which widget it
+  came from, so the SDK asks under the widget on this device that minted the token, whichever of your ids you pass. Nothing changes for a game with one widget.
+- **A widget drawn while offline fills in its pictures once the network is back**, on both platforms. It tries
+  again a few minutes later, up to three times; on Android the game's next open also fills it in.
+- **Android 8 to 11: widgets look and respond as they do on Android 12 and later**, including platform-font text,
+  turned nodes, and a wheel's spin and collect button.
+- **Android 8 to 12: a widget with many small pictures**, such as a slot animation drawn in a small widget, keeps
+  each update within what those versions can deliver.
+- **Android: a spin turns every placed copy of its campaign**, as on iOS: a small and a large copy of one campaign
+  turn together.
+- **Android: a scratch card's second play starts covered.**
+- **iOS: a widget's background covers the whole widget** when the widget's shape differs very
   slightly from its design's canvas.
 
 ## [2.1.0] — 2026-10-05
@@ -144,5 +136,4 @@ Resolves iOS `tappgo/tapp-ios` **2.2.1** and Android `com.tappgo` **2.1.0**, as 
 - **Picture in Picture alone needs no widget ids.** With the list empty and Picture in Picture on, the iOS
   build links the module into the app and asks nothing of the widget extension, and the Android build stages
   no widget. With the list empty and Picture in Picture off, the settings page and both builds refuse.
-- An iOS build is refused with more than eight widget ids — the most one widget extension serves — instead of
-  passing and rendering placeholders on a device.
+- An iOS build is refused with more than eight widget ids — the most one widget extension serves.
